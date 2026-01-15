@@ -27,7 +27,7 @@ export async function searchContacts(query: string, tag?: string) {
 
     let dbQuery = supabase
         .from('contacts')
-        .select('id, full_name, organization, waid, tags')
+        .select('id, full_name, organization, waid, tags, phone')
         .limit(20)
 
     if (query) {

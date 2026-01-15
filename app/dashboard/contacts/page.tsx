@@ -76,7 +76,7 @@ export default async function ContactsPage({
                                             {contact.organization || <span className="text-gray-400 italic">--</span>}
                                         </td>
                                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300 font-mono text-xs">
-                                            {contact.waid || '--'}
+                                            {contact.phone || contact.waid || '--'}
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex flex-wrap gap-2">
