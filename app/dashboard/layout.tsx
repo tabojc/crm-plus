@@ -6,6 +6,8 @@ import { redirect } from 'next/navigation'
 import { LayoutDashboard, Users, ShoppingBag, LogOut, Settings } from 'lucide-react'
 import { getDictionary } from '@/dictionaries'
 
+import MobileNav from '@/components/mobile-nav'
+
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -24,7 +26,9 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     }
 
     return (
-        <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
+        <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950 flex-col md:flex-row">
+            <MobileNav dict={dict} user={user} onSignOut={signOut} />
+
             {/* Sidebar */}
             <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 hidden md:flex flex-col">
                 <div className="p-6">
