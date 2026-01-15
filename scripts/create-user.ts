@@ -26,9 +26,40 @@ async function createUser() {
 
     if (error) {
         if (error.message.includes('already has been registered')) {
-            console.log('✅ User already exists.')
-            console.log(`📧 Email: ${email}`)
-            console.log(`🔑 Password: ${password}`)
+            console.log('⚠️ User already exists. Attempting to update/confirm...')
+
+            // 1. List users to find the ID
+            const { data: { users }, error: listError } = await supabase.auth.admin.listUsers()
+            if (listError) {
+                console.error('❌ Error listing users:', listError.message)
+                return
+            }
+
+            const existingUser = users.find(u => u.email === email)
+            if (!existingUser) {
+                console.error('❌ Could not find user in list despite "already registered" error.')
+                return
+            }
+
+            // 2. Update user (Confirm valid, Set Password)
+            const { error: updateError } = await supabase.auth.admin.updateUserById(
+                existingUser.id,
+                {
+                    password: password,
+                    email_confirm: true,
+                    user_metadata: { email_verified: true }
+                }
+            )
+
+            if (updateError) {
+                console.error('❌ Error updating user:', updateError.message)
+            } else {
+                console.log('✅ User updated successfully!')
+                console.log('Status: Confirmed & Password Reset')
+                console.log(`📧 Email: ${email}`)
+                console.log(`🔑 Password: ${password}`)
+            }
+
         } else {
             console.error('❌ Error creating user:', error.message)
         }

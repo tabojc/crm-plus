@@ -35,7 +35,7 @@ export default function LoginPage() {
                     {state.error && (
                         <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm flex items-center gap-2">
                             <AlertCircle className="w-4 h-4" />
-                            {state.error}
+                            {state.error === 'invalid_credentials' ? dict.login.error_creds : state.error}
                         </div>
                     )}
 
