@@ -72,7 +72,7 @@ for (const line of lines) {
             const parts = line.split(':');
             if (parts.length > 1) current.email = parts[1].trim();
         }
-        if (line.startsWith('TEL')) {
+        if (line.startsWith('TEL') || /^item\d+\.TEL/.test(line)) {
             const waidMatch = line.match(/waid=(\d+)/);
             if (waidMatch) {
                 current.waid = waidMatch[1];

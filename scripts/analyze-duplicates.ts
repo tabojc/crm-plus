@@ -1,109 +1,98 @@
 
-import fs from 'fs';
-import path from 'path';
+import { createClient } from '@supabase/supabase-js'
+import dotenv from 'dotenv'
+import fs from 'fs'
+import path from 'path'
 
-const vcfPath = path.join(process.cwd(), 'docs', '_Luisherr11 y 13.673 contactos más.vcf');
+// Load production environment variables
+dotenv.config({ path: '.env.production' })
 
-if (!fs.existsSync(vcfPath)) {
-    console.error(`File not found: ${vcfPath}`);
-    process.exit(1);
-}
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-const content = fs.readFileSync(vcfPath, 'utf-8');
-const lines = content.split(/\r?\n/);
+const supabase = createClient(supabaseUrl!, supabaseKey!, { auth: { persistSession: false } })
 
-interface Contact {
-    fn?: string;
-    waid?: string;
-    tel?: string;
-    org?: string;
-}
+async function analyzeDuplicates() {
+    console.log('--- Analyzing Duplicates in Production DB ---')
 
-let contacts: Contact[] = [];
-let currentCard: Contact = {};
+    // 1. Fetch ALL Contacts
+    let allContacts: any[] = []
+    let page = 0
+    const pageSize = 1000
+    let hasMore = true
 
-console.log('--- Starting Deduplication Analysis ---');
+    console.log('Fetching all contacts...')
 
-// Parsing Phase
-for (const line of lines) {
-    if (line.startsWith('BEGIN:VCARD')) {
-        currentCard = {};
-    } else if (line.startsWith('END:VCARD')) {
-        contacts.push(currentCard);
-    } else {
-        if (line.startsWith('FN:')) currentCard.fn = line.substring(3).trim();
-        if (line.startsWith('TEL')) {
-            // Prefer waid if available
-            const waidMatch = line.match(/waid=(\d+)/);
-            if (waidMatch) {
-                currentCard.waid = waidMatch[1];
+    while (hasMore) {
+        const { data, error } = await supabase
+            .from('contacts')
+            .select('id, full_name, waid, phone')
+            .range(page * pageSize, (page + 1) * pageSize - 1)
+
+        if (error) {
+            console.error('Error fetching prod:', error)
+            return
+        }
+
+        allContacts = [...allContacts, ...data]
+        if (data.length < pageSize) hasMore = false
+        page++
+        process.stdout.write('.')
+    }
+    console.log(`\nTotal Fetched: ${allContacts.length}`)
+
+    // 2. Map by WAID
+    const waidMap = new Map<string, any[]>()
+    const nameMap = new Map<string, any[]>() // Only for those without WAID? Or check all? Let's check all for Name dupes
+
+    allContacts.forEach(c => {
+        if (c.waid) {
+            const key = c.waid
+            if (!waidMap.has(key)) waidMap.set(key, [])
+            waidMap.get(key)?.push(c)
+        }
+
+        if (c.full_name) {
+            const key = c.full_name.trim().toLowerCase()
+            if (!nameMap.has(key)) nameMap.set(key, [])
+            nameMap.get(key)?.push(c)
+        }
+    })
+
+    // 3. Report WAID Duplicates (Critical)
+    console.log('\n--- WAID Duplicates (Critical) ---')
+    let waidDupCount = 0
+    waidMap.forEach((list, waid) => {
+        if (list.length > 1) {
+            console.log(`WAID: ${waid} -> ${list.length} records`)
+            list.forEach(c => console.log(`   - [${c.id}] ${c.full_name}`))
+            waidDupCount++
+        }
+    })
+
+    if (waidDupCount === 0) console.log('✅ No WAID duplicates found.')
+
+    // 4. Report Name Duplicates (Advisory)
+    console.log('\n--- Name Duplicates (Advisory) ---')
+    let nameDupCount = 0
+    nameMap.forEach((list, name) => {
+        if (list.length > 1) {
+            // Filter out if they share the same WAID (already covered)
+            // If Waids differ or are null, it's interesting
+            const distinctWaids = new Set(list.map(c => c.waid).filter(Boolean))
+
+            if (distinctWaids.size > 1) {
+                console.log(`Name: "${list[0].full_name}" -> Different WAIDs: ${Array.from(distinctWaids).join(', ')}`)
+                nameDupCount++
+            } else if (list.some(c => !c.waid)) {
+                // Check if it's purely lack of WAID
+                console.log(`Name: "${list[0].full_name}" -> Repetitions (some missing WAID): ${list.length}`)
+                nameDupCount++
             }
-            // Also grab raw number just in case
-            const telParts = line.split(':');
-            if (telParts.length > 1) {
-                currentCard.tel = telParts[1].trim();
-            }
         }
-    }
+    })
+
+    console.log(`\nFound matches for ${nameDupCount} names that suggest duplication.`)
 }
 
-// Analysis Phase
-const totalContacts = contacts.length;
-const uniqueWaids = new Map<string, Contact[]>();
-const uniqueNamesNoWaid = new Map<string, Contact[]>();
-let duplicatesCount = 0;
-let contactsWithoutWaid = 0;
-
-contacts.forEach(c => {
-    if (c.waid) {
-        if (!uniqueWaids.has(c.waid)) {
-            uniqueWaids.set(c.waid, []);
-        } else {
-            duplicatesCount++;
-        }
-        uniqueWaids.get(c.waid)?.push(c);
-    } else {
-        contactsWithoutWaid++;
-        const key = c.fn || 'UNKNOWN';
-        if (!uniqueNamesNoWaid.has(key)) {
-            uniqueNamesNoWaid.set(key, []);
-        }
-        uniqueNamesNoWaid.get(key)?.push(c);
-    }
-});
-
-// Calculate strict name duplicates for those without WAID
-let nameDuplicatesCount = 0;
-uniqueNamesNoWaid.forEach((list) => {
-    if (list.length > 1) {
-        nameDuplicatesCount += (list.length - 1);
-    }
-});
-
-const estimatedUnique = uniqueWaids.size + uniqueNamesNoWaid.size;
-
-console.log(`Total Records: ${totalContacts}`);
-console.log(`----------------------------------------`);
-console.log(`Duplicates by WhatsApp ID: ${duplicatesCount}`);
-console.log(`Duplicates by Name (No WAID): ${nameDuplicatesCount}`);
-console.log(`----------------------------------------`);
-console.log(`Unique WhatsApp IDs: ${uniqueWaids.size}`);
-console.log(`Unique Names (No WAID): ${uniqueNamesNoWaid.size}`);
-console.log(`----------------------------------------`);
-console.log(`ESTIMATED REAL CONTACTS: ${estimatedUnique}`);
-console.log(`(Reduction of ${totalContacts - estimatedUnique} records)`);
-
-// Show some duplicate examples
-console.log('\n--- Duplicate Examples (Same WAID, Different Names?) ---');
-let examplesShown = 0;
-for (const [waid, list] of uniqueWaids) {
-    if (list.length > 1 && examplesShown < 5) {
-        const names = list.map(c => c.fn).filter(n => n);
-        // Check if names are actually different
-        const uniqueNames = new Set(names);
-        if (uniqueNames.size > 1) {
-            console.log(`WAID ${waid}: ${[...uniqueNames].join(' | ')}`);
-            examplesShown++;
-        }
-    }
-}
+analyzeDuplicates()
