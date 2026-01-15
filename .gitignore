@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Private Data & Docs
+docs/*.vcf
+docs/*.pdf
+docs/*.xls
+docs/*_clean.json
+docs/extracted_images/
+docs/image_list.txt
+docs/image_mapping.json
+
