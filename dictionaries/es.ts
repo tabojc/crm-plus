@@ -25,6 +25,17 @@ export const es = {
         settings: "Configuración",
         logout: "Cerrar Sesión",
     },
+    dashboard: {
+        overview: "Resumen General",
+        welcome: "Bienvenido de nuevo a tu CRM.",
+        total_contacts: "Contactos Totales",
+        products: "Productos",
+        active_catalog: "Catálogo Activo",
+        system_status: "Estado del Sistema",
+        online: "En Línea",
+        version: "v1.0.0",
+        new_today: "+{count} hoy"
+    },
     login: {
         title: "Acceso Backoffice",
         email: "Correo Electrónico",
@@ -36,7 +47,7 @@ export const es = {
     },
     contacts: {
         title: "Contactos",
-        subtitle: "Explora tu base de datos de +13,000 contactos.",
+        subtitle: "Explora tu base de datos de {count} contactos.",
         table_name: "Nombre",
         table_org: "Organización",
         table_tags: "Etiquetas",
