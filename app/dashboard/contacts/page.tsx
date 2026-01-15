@@ -1,5 +1,5 @@
 import SearchInput from '@/components/search-input'
-import { searchContacts } from '@/app/lib/actions'
+import { searchContacts, getContactsCount } from '@/app/lib/actions'
 import ContactActions from '@/components/contact-row-actions'
 import Link from 'next/link'
 import { X, Plus } from 'lucide-react'
@@ -16,7 +16,10 @@ export default async function ContactsPage({
     const params = await searchParams
     const query = params?.query || ''
     const tag = params?.tag || ''
-    const contacts = await searchContacts(query, tag)
+    const [contacts, totalCount] = await Promise.all([
+        searchContacts(query, tag),
+        getContactsCount()
+    ])
     const dict = getDictionary()
 
     return (
@@ -24,7 +27,9 @@ export default async function ContactsPage({
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
                     <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{dict.contacts.title}</h2>
-                    <p className="text-gray-500 dark:text-gray-400">{dict.contacts.subtitle}</p>
+                    <p className="text-gray-500 dark:text-gray-400">
+                        {dict.contacts.subtitle.replace('{count}', totalCount.toLocaleString())}
+                    </p>
                 </div>
                 <div className="flex items-center gap-4">
                     <SearchInput placeholder={dict.common.search_placeholder} />

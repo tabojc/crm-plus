@@ -231,3 +231,16 @@ export async function deleteContact(id: string) {
     revalidatePath('/dashboard/contacts')
     return { success: true }
 }
+
+export async function getContactsCount() {
+    const supabase = await createClient()
+    const { count, error } = await supabase
+        .from('contacts')
+        .select('*', { count: 'exact', head: true })
+
+    if (error) {
+        console.error('Error getting contact count:', error)
+        return 0
+    }
+    return count || 0
+}
