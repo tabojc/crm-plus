@@ -50,6 +50,16 @@ npm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000).
 
+### 4. Default Local Credentials
+To access the app locally, use the following pre-configured user:
+- **Email**: `admin@crmplus.com`
+- **Password**: `password123`
+
+If this user does not exist (or after a database reset), run:
+```bash
+npx tsx scripts/create-user.ts
+```
+
 ---
 
 ## 🌍 Environments & Deployment
