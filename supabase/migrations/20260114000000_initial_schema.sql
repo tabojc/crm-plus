@@ -19,7 +19,7 @@ create table contacts (
 -- Enable RLS
 alter table contacts enable row level security;
 
--- Policy: Allow authenticated users to do everything (for now, Carmen is the only user)
+-- Policy: Allow authenticated users to do everything (Single Tenant / Admin-only for now)
 create policy "Enable all access for authenticated users" 
 on contacts for all 
 to authenticated 

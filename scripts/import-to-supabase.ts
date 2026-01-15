@@ -5,17 +5,16 @@ import path from 'path';
 import dotenv from 'dotenv';
 
 // Load environment variables manually since we are running via tsx
-// Prioritize .env.production for production deployment
-const envProdPath = path.join(process.cwd(), '.env.production');
+// FORCE LOCAL for this operation as per user context
 const envLocalPath = path.join(process.cwd(), '.env.local');
 
 let envConfig;
-if (fs.existsSync(envProdPath)) {
-    console.log('Loading credentials from .env.production');
-    envConfig = dotenv.parse(fs.readFileSync(envProdPath));
-} else {
-    console.log('Loading credentials from .env.local');
+if (fs.existsSync(envLocalPath)) {
+    console.log('Loading credentials from .env.local (Forcing Local Restoration)');
     envConfig = dotenv.parse(fs.readFileSync(envLocalPath));
+} else {
+    console.error('.env.local not found');
+    process.exit(1);
 }
 
 const SUPABASE_URL = envConfig.NEXT_PUBLIC_SUPABASE_URL;
