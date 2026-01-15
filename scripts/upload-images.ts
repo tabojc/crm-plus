@@ -55,7 +55,7 @@ async function main() {
             console.error('Error creating bucket:', error);
             return;
         }
-        bucket = data; // Although data might be string or object depending on version, usually it returns name
+        bucket = data as any; // Cast to match Bucket type for this script logic
     } else {
         console.log(`Bucket '${BUCKET_NAME}' already exists.`);
     }
@@ -87,7 +87,7 @@ async function main() {
     const batchSize = 5;
     for (let i = 0; i < mapping.length; i += batchSize) {
         const batch = mapping.slice(i, i + batchSize);
-        await Promise.all(batch.map(async (item) => {
+        await Promise.all(batch.map(async (item: any) => {
             if (!item.product || !item.imageFile) return;
 
             const productName = item.product.name;
