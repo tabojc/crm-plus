@@ -18,6 +18,7 @@ export default function ContactForm({ dict, initialData, isEdit = false }: Conta
     const [formData, setFormData] = useState({
         full_name: initialData?.full_name || '',
         organization: initialData?.organization || '',
+        phone: initialData?.phone || '',
         waid: initialData?.waid || '',
         tags: initialData?.tags?.join(', ') || ''
     })
@@ -88,6 +89,20 @@ export default function ContactForm({ dict, initialData, isEdit = false }: Conta
                         className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
                         value={formData.organization}
                         onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
+                    />
+                </div>
+
+                {/* Phone */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        {dict.contacts.table_phone}
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="+58 412..."
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     />
                 </div>
 

@@ -15,5 +15,6 @@ export type ContactInput = {
     full_name: string
     organization?: string
     waid?: string
+    phone?: string
     tags?: string[]
 }
