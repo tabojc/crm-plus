@@ -57,7 +57,7 @@ async function syncMissingContacts() {
     console.log(`\nProduction: ${prodCount} contacts.`)
 
     // 3. Identify Missing
-    const toInsert = []
+    const toInsert: any[] = []
 
     for (const contact of allContacts) {
         const keyWaid = contact.waid ? `WA:${contact.waid}` : null

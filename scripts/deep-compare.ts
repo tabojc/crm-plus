@@ -54,14 +54,14 @@ async function deepCompare() {
     })
 
     // 1. Extra in Prod
-    const extraInProd = []
+    const extraInProd: any[] = []
     prodContacts.forEach(c => {
         const key = c.waid ? `WA:${c.waid}` : `NM:${c.full_name}`
         if (!localMap.has(key)) extraInProd.push(c)
     })
 
     // 2. Extra in Local (Should be 0)
-    const extraInLocal = []
+    const extraInLocal: any[] = []
     localContacts.forEach(c => {
         const key = c.waid ? `WA:${c.waid}` : `NM:${c.full_name}`
         if (!prodMap.has(key)) extraInLocal.push(c)

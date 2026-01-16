@@ -21,7 +21,7 @@ async function analyze(client: any, label: string) {
     // However, simplest is:
     // select * from contacts where organization is not null and organization != ''
 
-    let candidates = []
+    let candidates: any[] = []
     let page = 0
     let pageSize = 1000
     let hasMore = true
@@ -36,7 +36,7 @@ async function analyze(client: any, label: string) {
         if (error) { console.error(error); return }
 
         // Filter in JS for precision
-        const badNames = data.filter(c => {
+        const badNames = data.filter((c: any) => {
             const name = (c.full_name || '').trim()
             return name === '.' || name === ''
         })

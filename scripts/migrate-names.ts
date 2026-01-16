@@ -15,7 +15,7 @@ async function migrate(client: any, label: string) {
     console.log(`\n🚀 Migrating ${label}...`)
 
     // 1. Fetch Candidates again
-    let candidates = []
+    let candidates: any[] = []
     let page = 0
     let pageSize = 1000
     let hasMore = true
@@ -29,12 +29,12 @@ async function migrate(client: any, label: string) {
 
         if (error) { console.error(error); return }
 
-        const badNames = data.filter(c => {
+        const invalids = data.filter((c: any) => {
             const name = (c.full_name || '').trim()
             return name === '.' || name === ''
         })
 
-        candidates = [...candidates, ...badNames]
+        candidates = [...candidates, ...invalids]
         if (data.length < pageSize) hasMore = false
         page++
     }

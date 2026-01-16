@@ -31,7 +31,9 @@ async function patchPhones() {
 
     // 2. Fetch Production Contacts with Missing Phones
     // We only care about contacts that have NO phone in DB
-    let missingPhonesDB = []
+    // 2. Fetch Production Contacts with Missing Phones
+    // We only care about contacts that have NO phone in DB
+    let missingPhonesDB: any[] = []
     let hasMore = true
     let page = 0
     const pageSize = 1000
@@ -59,7 +61,7 @@ async function patchPhones() {
 
     // 3. Match and Update
     let updateCount = 0
-    let updates = []
+    let updates: any[] = []
 
     for (const prodContact of missingPhonesDB) {
         // Find match in JSON
