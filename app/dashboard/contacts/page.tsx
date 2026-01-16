@@ -2,7 +2,7 @@ import SearchInput from '@/components/search-input'
 import { searchContacts, getContactsCount } from '@/app/lib/actions'
 import ContactActions from '@/components/contact-row-actions'
 import Link from 'next/link'
-import { X, Plus, FilePlus } from 'lucide-react'
+import { X, Plus, FilePlus, CheckCircle2, AlertCircle } from 'lucide-react'
 import { getDictionary } from '@/dictionaries'
 
 export default async function ContactsPage({
@@ -76,7 +76,22 @@ export default async function ContactsPage({
                             ) : (
                                 contacts.map((contact: any) => (
                                     <tr key={contact.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                        <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{contact.full_name}</td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-2">
+                                                <div className="font-medium text-gray-900 dark:text-white">
+                                                    {contact.full_name}
+                                                </div>
+                                                {contact.tags?.some((t: string) => t.toLowerCase().includes('verificado')) ? (
+                                                    <div title="Verificado">
+                                                        <CheckCircle2 className="w-4 h-4 text-green-500" />
+                                                    </div>
+                                                ) : (
+                                                    <div title="No Verificado">
+                                                        <AlertCircle className="w-4 h-4 text-yellow-500 opacity-50" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </td>
                                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
                                             {contact.organization || <span className="text-gray-400 italic">--</span>}
                                         </td>

@@ -9,6 +9,7 @@ export class ContactRepository {
         let dbQuery = this.supabase
             .from('contacts')
             .select('id, full_name, organization, waid, tags, phone')
+            .order('created_at', { ascending: false })
             .limit(20)
 
         if (query) {
