@@ -2,7 +2,7 @@ import SearchInput from '@/components/search-input'
 import { searchContacts, getContactsCount } from '@/app/lib/actions'
 import ContactActions from '@/components/contact-row-actions'
 import Link from 'next/link'
-import { X, Plus } from 'lucide-react'
+import { X, Plus, FilePlus } from 'lucide-react'
 import { getDictionary } from '@/dictionaries'
 
 export default async function ContactsPage({
@@ -107,9 +107,10 @@ export default async function ContactsPage({
                                             <div className="flex justify-end items-center gap-3">
                                                 <Link
                                                     href={`/dashboard/quotes/create?contactId=${contact.id}`}
-                                                    className="text-blue-600 hover:text-blue-500 font-medium text-xs whitespace-nowrap"
+                                                    className="p-1 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
+                                                    title={dict.contacts.create_quote}
                                                 >
-                                                    {dict.contacts.create_quote}
+                                                    <FilePlus className="w-5 h-5" />
                                                 </Link>
                                                 <div className="h-4 w-px bg-gray-200 dark:bg-gray-700"></div>
                                                 <ContactActions contactId={contact.id} dict={dict} />
