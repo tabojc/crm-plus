@@ -10,6 +10,7 @@ export class ContactRepository {
             .from('contacts')
             .select('id, full_name, organization, waid, tags, phone')
             .order('created_at', { ascending: false })
+            .order('full_name', { ascending: true })
             .limit(20)
 
         if (query) {

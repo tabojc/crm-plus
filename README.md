@@ -89,3 +89,21 @@ The project uses `.env` files to switch between Local and Production.
 - `/app`: Next.js App Router.
 - `/docs`: Raw data (PDF Catalog, .vcf contacts).
 - `/lib`: VCard parsers, PDF extractors.
+
+## 🛠 Utility Scripts
+
+The project includes several CLI scripts for database maintenance and synchronization. Run them using `npm run <script-name>`.
+
+| Script Name | Command | Description |
+| :--- | :--- | :--- |
+| `db:backup` | `scripts/backup-prod.ts` | Creates a JSON backup of Production data (Contacts, Quotes, Products) to `backups/`. |
+| `db:create-user` | `scripts/create-user.ts` | Creates a default admin user in the **Local** database. |
+| `db:verify-login` | `scripts/verify-login.ts` | Verifies if the Production credentials are working correctly. |
+| `db:sync-contacts` | `scripts/sync-missing-contacts.ts` | Detects and uploads contacts present in local JSON but missing in Production. |
+| `db:convert-vcf` | `scripts/convert-contacts.ts` | Parses raw VCF files into a clean JSON format. |
+
+### Example Usage:
+```bash
+# Backup production data
+npm run db:backup
+```

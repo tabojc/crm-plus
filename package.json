@@ -6,7 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:backup": "tsx scripts/backup-prod.ts",
+    "db:create-user": "tsx scripts/create-user.ts",
+    "db:verify-login": "tsx scripts/verify-login.ts",
+    "db:sync-contacts": "tsx scripts/sync-missing-contacts.ts",
+    "db:convert-vcf": "tsx scripts/convert-contacts.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
