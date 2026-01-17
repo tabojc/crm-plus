@@ -27,7 +27,7 @@ export default async function QuoteDetailsPage({ params }: { params: { id: strin
             <header className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                        {dict.quote_details.title} #{quote.id.slice(0, 8)}
+                        {dict.quote_details.title} #{quote.number}
                     </h1>
                     <div className="flex items-center gap-2 text-gray-500">
                         <span className="font-medium text-gray-900 dark:text-white">{quote.contacts.full_name}</span>
@@ -51,8 +51,8 @@ export default async function QuoteDetailsPage({ params }: { params: { id: strin
                                 <div className="flex items-center gap-2 mt-1">
                                     <p className="text-sm text-gray-500">{item.quantity} x ${item.unit_price}</p>
                                     <span className={`text-[10px] px-2 py-0.5 rounded-full border ${item.price_type === 2 ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800' :
-                                            item.price_type === 3 ? 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-800' :
-                                                'bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700'
+                                        item.price_type === 3 ? 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-800' :
+                                            'bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700'
                                         }`}>
                                         {item.price_type === 1 ? 'Precio Lista' :
                                             item.price_type === 2 ? 'Precio Oferta' :

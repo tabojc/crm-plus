@@ -2,122 +2,143 @@ import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/render
 import { es } from '@/dictionaries/es'
 
 // Create styles
+// Create styles
 const styles = StyleSheet.create({
     page: {
-        padding: 30,
+        padding: 40,
         fontFamily: 'Helvetica',
-        fontSize: 12,
-        color: '#333'
+        fontSize: 10,
+        color: '#333',
+        lineHeight: 1.5
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 40,
+        marginBottom: 30,
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
         paddingBottom: 20
     },
-    companyInfo: {
+    headerLeft: {
         flexDirection: 'column',
+        justifyContent: 'flex-start'
     },
-    companyName: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 5,
-        color: '#2563eb' // Blue-600
-    },
-    companyDetails: {
-        fontSize: 10,
-        color: '#666'
-    },
-    quoteInfo: {
+    headerRight: {
         flexDirection: 'column',
         alignItems: 'flex-end'
     },
-    title: {
-        fontSize: 24,
+    mainTitle: {
+        fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 10,
-        color: '#111'
-    },
-    meta: {
-        fontSize: 10,
-        marginBottom: 4
-    },
-    customerSection: {
-        marginBottom: 30,
-        backgroundColor: '#f8fafc',
-        padding: 15,
-        borderRadius: 4
-    },
-    sectionTitle: {
-        fontSize: 10,
-        fontWeight: 'bold',
-        color: '#64748b',
-        marginBottom: 8,
+        color: '#1e3a8a', // Dark blue
         textTransform: 'uppercase'
     },
-    customerName: {
-        fontSize: 14,
+    subTitle: {
+        fontSize: 12,
         fontWeight: 'bold',
+        color: '#444',
+        marginTop: 5
+    },
+    metaText: {
+        fontSize: 10,
+        color: '#666'
+    },
+    customerSection: {
+        marginBottom: 20,
+        padding: 10,
+        backgroundColor: '#f8fafc',
+        borderRadius: 4
+    },
+    customerRow: {
+        fontSize: 10,
         marginBottom: 2
     },
+    label: {
+        fontWeight: 'bold',
+        color: '#444'
+    },
     table: {
-        flexDirection: 'column',
-        marginBottom: 30
+        marginTop: 20,
+        marginBottom: 20
     },
     tableHeader: {
         flexDirection: 'row',
-        borderBottomWidth: 1,
-        borderBottomColor: '#000',
-        paddingBottom: 8,
-        marginBottom: 8,
+        backgroundColor: '#f1f5f9',
+        paddingVertical: 6,
+        paddingHorizontal: 4,
+        marginBottom: 4,
         fontWeight: 'bold',
-        fontSize: 10
+        fontSize: 9,
+        color: '#475569'
     },
     tableRow: {
         flexDirection: 'row',
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-        paddingVertical: 8,
-        alignItems: 'center'
+        borderBottomColor: '#f1f5f9',
+        paddingVertical: 6,
+        paddingHorizontal: 4,
+        fontSize: 9
     },
-    colProduct: { width: '50%' },
-    colQty: { width: '15%', textAlign: 'center' },
-    colPrice: { width: '20%', textAlign: 'right' },
-    colTotal: { width: '15%', textAlign: 'right' },
+    colProduct: { width: '55%' },
+    colQty: { width: '10%', textAlign: 'center' },
+    colPrice: { width: '15%', textAlign: 'right' },
+    colTotal: { width: '20%', textAlign: 'right' },
 
-    productName: {
-        fontSize: 11,
-        fontWeight: 'bold',
-        marginBottom: 2
-    },
-    productDesc: {
-        fontSize: 9,
-        color: '#666'
-    },
+    productName: { fontWeight: 'bold', color: '#333' },
 
     footer: {
-        marginTop: 'auto',
+        position: 'absolute',
+        bottom: 30,
+        left: 40,
+        right: 40,
         borderTopWidth: 1,
         borderTopColor: '#eee',
-        paddingTop: 20,
-        flexDirection: 'row',
-        justifyContent: 'flex-end'
+        paddingTop: 10,
+        textAlign: 'center',
+        fontSize: 8,
+        color: '#94a3b8'
     },
-    totalSection: {
-        width: 200,
+    totalsContainer: {
+        marginTop: 20,
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        borderTopWidth: 1,
+        borderTopColor: '#eee',
+        paddingTop: 10
+    },
+    totalRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center'
+        justifyContent: 'flex-end',
+        alignItems: 'flex-end',
+        marginBottom: 4,
+        width: 200
     },
     totalLabel: {
-        fontSize: 14,
-        fontWeight: 'bold'
-    },
-    totalAmount: {
-        fontSize: 20,
+        fontSize: 10,
         fontWeight: 'bold',
+        width: 100,
+        textAlign: 'right',
+        marginRight: 10,
+        color: '#666'
+    },
+    totalValue: {
+        fontSize: 10,
+        width: 80,
+        textAlign: 'right'
+    },
+    finalTotalLabel: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        width: 100,
+        textAlign: 'right',
+        marginRight: 10,
+        color: '#333'
+    },
+    finalTotalValue: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        width: 80,
+        textAlign: 'right',
         color: '#2563eb'
     }
 });
@@ -141,72 +162,98 @@ type QuoteData = {
     }[]
 }
 
-const QuotePDF = ({ quote }: { quote: QuoteData }) => (
-    <Document>
-        <Page size="A4" style={styles.page}>
+const formatDate = (dateStr: string) => {
+    if (!dateStr) return ''
+    const date = new Date(dateStr)
+    return new Intl.DateTimeFormat('es-VE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    }).format(date)
+}
 
-            {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.companyInfo}>
-                    <Text style={styles.title}>{es.quotes.title.toUpperCase()}: #{quote.number || quote.id.slice(0, 8)}</Text>
-                    {/* <Text style={styles.meta}>ID: {quote.id.slice(0, 8)}</Text> */}
-                </View>
-                <View style={styles.quoteInfo}>
-                    <Text style={styles.meta}>{new Date(quote.created_at).toLocaleDateString()}</Text>
-                </View>
-            </View>
+const QuotePDF = ({ quote }: { quote: QuoteData }) => {
+    const companyName = process.env.NEXT_PUBLIC_COMPANY_NAME || 'MOBIMED, C.A.'
+    const total = Number(quote.total)
+    const subtotal = total / 1.16
+    const tax = total - subtotal
 
-            {/* Customer Info */}
-            <View style={styles.customerSection}>
-                <Text style={styles.sectionTitle}>Cliente</Text>
-                <Text style={styles.customerName}>{quote.contacts.full_name}</Text>
-                <Text style={styles.companyDetails}>{quote.contacts.organization}</Text>
-                <Text style={styles.companyDetails}>{quote.contacts.address || 'Maracay'}</Text>
-                {quote.contacts.phone && <Text style={styles.companyDetails}>{quote.contacts.phone}</Text>}
-            </View>
+    return (
+        <Document>
+            <Page size="A4" style={styles.page}>
 
-            {/* Items Table */}
-            <View style={styles.table}>
-                {/* Table Header */}
-                <View style={styles.tableHeader}>
-                    <Text style={styles.colProduct}>Producto</Text>
-                    <Text style={styles.colQty}>Cant.</Text>
-                    <Text style={styles.colPrice}>Precio Unit.</Text>
-                    <Text style={styles.colTotal}>Total</Text>
-                </View>
-
-                {/* Table Rows */}
-                {quote.quote_items.map((item, index) => (
-                    <View key={index} style={styles.tableRow}>
-                        <View style={styles.colProduct}>
-                            <Text style={styles.productName}>{item.product_name}</Text>
-                        </View>
-                        <Text style={styles.colQty}>{item.quantity}</Text>
-                        <Text style={styles.colPrice}>${Number(item.unit_price).toFixed(2)}</Text>
-                        <Text style={styles.colTotal}>${Number(item.total).toFixed(2)}</Text>
+                {/* Header */}
+                <View style={styles.header}>
+                    <View style={styles.headerLeft}>
+                        <Text style={styles.mainTitle}>{companyName}</Text>
+                        <Text style={{ fontSize: 9, color: '#666', marginTop: 2 }}>{es.pdf.rif}: J-504620210</Text>
                     </View>
-                ))}
-            </View>
-
-            {/* Totals */}
-            <View style={{ marginTop: 'auto', borderTopWidth: 1, borderTopColor: '#eee', paddingTop: 20, flexDirection: 'row', justifyContent: 'flex-end' }}>
-                <View style={styles.totalSection}>
-                    <Text style={styles.totalLabel}>TOTAL</Text>
-                    <Text style={styles.totalAmount}>${Number(quote.total).toFixed(2)}</Text>
+                    <View style={styles.headerRight}>
+                        <Text style={styles.subTitle}>{es.pdf.quote_title}: #{quote.number || '0000'}</Text>
+                        <Text style={styles.metaText}>{es.pdf.date}: {formatDate(quote.created_at)}</Text>
+                    </View>
                 </View>
-            </View>
 
-            {/* Footer / Company Info */}
-            <View style={styles.footer}>
-                <View style={styles.companyInfo}>
-                    <Text style={styles.companyName}>CRM Plus</Text>
-                    <Text style={styles.companyDetails}>Soluciones Profesionales</Text>
-                    <Text style={styles.companyDetails}>contacto@crmplus.com</Text>
+                {/* Customer Info */}
+                <View style={styles.customerSection}>
+                    <Text style={styles.customerRow}>
+                        <Text style={styles.label}>{es.pdf.client}: </Text>
+                        {quote.contacts.full_name}
+                    </Text>
+                    <Text style={styles.customerRow}>
+                        <Text style={styles.label}>{es.pdf.address}: </Text>
+                        {quote.contacts.address || 'Maracay'}
+                    </Text>
+                    <Text style={styles.customerRow}>
+                        <Text style={styles.label}>{es.pdf.phone}: </Text>
+                        {quote.contacts.phone || 'N/A'}
+                    </Text>
                 </View>
-            </View>
 
-        </Page>
-    </Document>
-);
+                {/* Items Table */}
+                <View style={styles.table}>
+                    <View style={styles.tableHeader}>
+                        <Text style={styles.colProduct}>{es.pdf.table_product}</Text>
+                        <Text style={styles.colQty}>{es.pdf.table_qty}</Text>
+                        <Text style={styles.colPrice}>{es.pdf.table_price}</Text>
+                        <Text style={styles.colTotal}>{es.pdf.table_total}</Text>
+                    </View>
+                    {quote.quote_items.map((item, index) => (
+                        <View key={index} style={styles.tableRow}>
+                            <View style={styles.colProduct}>
+                                <Text style={styles.productName}>{item.product_name}</Text>
+                            </View>
+                            <Text style={styles.colQty}>{item.quantity}</Text>
+                            <Text style={styles.colPrice}>${Number(item.unit_price).toFixed(2)}</Text>
+                            <Text style={styles.colTotal}>${Number(item.total).toFixed(2)}</Text>
+                        </View>
+                    ))}
+                </View>
 
-export default QuotePDF;
+                {/* Totals */}
+                <View style={styles.totalsContainer}>
+                    <View style={styles.totalRow}>
+                        <Text style={styles.totalLabel}>{es.pdf.subtotal}:</Text>
+                        <Text style={styles.totalValue}>${subtotal.toFixed(2)}</Text>
+                    </View>
+                    <View style={styles.totalRow}>
+                        <Text style={styles.totalLabel}>{es.pdf.tax} (16%):</Text>
+                        <Text style={styles.totalValue}>${tax.toFixed(2)}</Text>
+                    </View>
+                    <View style={[styles.totalRow, { marginTop: 4 }]}>
+                        <Text style={styles.finalTotalLabel}>{es.pdf.total_amount}:</Text>
+                        <Text style={styles.finalTotalValue}>${total.toFixed(2)}</Text>
+                    </View>
+                </View>
+
+                {/* Footer */}
+                <View style={styles.footer}>
+                    <Text>{es.pdf.footer_text}</Text>
+                </View>
+
+            </Page>
+        </Document>
+    )
+}
+
+export default QuotePDF

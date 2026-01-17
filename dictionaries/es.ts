@@ -107,5 +107,21 @@ export const es = {
         send_wa: "Enviar por WhatsApp",
         copied: "¡Copiado!",
         download_pdf: "Descargar PDF",
+    },
+    pdf: {
+        quote_title: "COTIZACIÓN",
+        date: "FECHA",
+        client: "CLIENTE",
+        address: "Dirección",
+        phone: "Teléfono",
+        rif: "Rif",
+        table_product: "PRODUCTO",
+        table_qty: "CANT.",
+        table_price: "PRECIO UNIT.",
+        table_total: "TOTAL",
+        subtotal: "Subtotal",
+        tax: "IVA",
+        total_amount: "MONTO TOTAL",
+        footer_text: "CRM Plus | Soluciones Profesionales | contacto@crmplus.com",
     }
 }
