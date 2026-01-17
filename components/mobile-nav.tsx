@@ -53,14 +53,7 @@ export default function MobileNav({ dict, user, onSignOut }: { dict: any, user: 
                             <ShoppingBag className="w-5 h-5" />
                             {dict.nav.products}
                         </Link>
-                        <Link
-                            href="/dashboard/settings"
-                            className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                            onClick={() => setIsOpen(false)}
-                        >
-                            <Settings className="w-5 h-5" />
-                            {dict.nav.settings}
-                        </Link>
+
 
                         <div className="border-t border-gray-200 dark:border-gray-800 my-2 pt-2">
                             <div className="flex items-center gap-3 px-4 py-3">

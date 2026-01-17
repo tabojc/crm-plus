@@ -54,10 +54,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
                         <FileText className="w-5 h-5" />
                         {dict.nav.quotes}
                     </Link>
-                    <Link href="/dashboard/settings" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                        <Settings className="w-5 h-5" />
-                        {dict.nav.settings}
-                    </Link>
+
                 </nav>
 
                 <div className="p-4 border-t border-gray-200 dark:border-gray-800">
