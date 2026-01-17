@@ -8,12 +8,13 @@
     "start": "next start",
     "lint": "eslint",
     "db:backup": "tsx scripts/backup-prod.ts",
-    "db:create-user": "tsx scripts/create-user.ts",
     "db:verify-login": "tsx scripts/verify-login.ts",
     "db:sync-contacts": "tsx scripts/sync-missing-contacts.ts",
-    "db:convert-vcf": "tsx scripts/convert-contacts.ts"
+    "db:convert-vcf": "tsx scripts/convert-contacts.ts",
+    "migration": "npx supabase db push"
   },
   "dependencies": {
+    "@react-pdf/renderer": "^4.3.2",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.90.1",
     "class-variance-authority": "^0.7.1",
@@ -22,6 +23,7 @@
     "lucide-react": "^0.562.0",
     "mime-types": "^3.0.2",
     "next": "16.1.2",
+    "pg": "^8.17.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "tailwind-merge": "^3.4.0",
@@ -32,6 +34,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/mime-types": "^3.0.1",
     "@types/node": "^20",
+    "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

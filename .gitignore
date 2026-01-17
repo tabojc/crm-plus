@@ -49,3 +49,4 @@ docs/extracted_images/
 docs/image_list.txt
 docs/image_mapping.json
 
+backups/*.json
