@@ -1,7 +1,7 @@
 'use client'
 
 import { Copy, Share2, Check, Download } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { getDictionary } from '@/dictionaries'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import QuotePDF from './quote-pdf'
@@ -25,9 +25,16 @@ type QuoteData = {
     }[]
 }
 
+import { Button } from '@/components/ui/button'
+
 export default function QuoteActions({ quote }: { quote: QuoteData }) {
     const [copied, setCopied] = useState(false)
+    const [isMounted, setIsMounted] = useState(false)
     const dict = getDictionary()
+
+    useEffect(() => {
+        setIsMounted(true)
+    }, [])
 
     const generateWhatsAppText = () => {
         const header = dict.quotes.wa_template_header.replace('{name}', quote.contacts.full_name) + '\n\n'
@@ -51,40 +58,60 @@ export default function QuoteActions({ quote }: { quote: QuoteData }) {
         window.open(`https://wa.me/?text=${text}`, '_blank')
     }
 
+    if (!isMounted) {
+        return (
+            <div className="flex gap-4">
+                <Button disabled variant="outline" className="text-gray-400 cursor-not-allowed">
+                    <Download className="w-4 h-4 mr-2" />
+                    {dict.quote_details.download_pdf}
+                </Button>
+
+                <Button disabled variant="outline" className="opacity-50">
+                    <Copy className="w-4 h-4 mr-2" />
+                    {dict.quote_details.copy_wa}
+                </Button>
+
+                <Button disabled className="bg-green-500 text-white opacity-50">
+                    <Share2 className="w-4 h-4 mr-2" />
+                    {dict.quote_details.send_wa}
+                </Button>
+            </div>
+        )
+    }
+
     return (
         <div className="flex gap-4">
             <PDFDownloadLink
                 document={<QuotePDF quote={quote} />}
-                fileName={`cotizacion-${quote.id.slice(0, 8)}.pdf`}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                fileName={`cotizacion-${quote.number}.pdf`}
+                className="flex items-center"
             >
                 {({ blob, url, loading, error }) => (
-                    loading ? (
-                        <>Loading...</>
-                    ) : (
-                        <>
-                            <Download className="w-4 h-4" />
-                            {dict.quote_details.download_pdf}
-                        </>
-                    )
+                    <Button variant="outline" disabled={loading}>
+                        {loading ? (
+                            "Loading..."
+                        ) : (
+                            <>
+                                <Download className="w-4 h-4 mr-2" />
+                                {dict.quote_details.download_pdf}
+                            </>
+                        )}
+                    </Button>
                 )}
             </PDFDownloadLink>
 
-            <button
-                onClick={copyToClipboard}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-                {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+            <Button onClick={copyToClipboard} variant="outline">
+                {copied ? <Check className="w-4 h-4 mr-2 text-green-500" /> : <Copy className="w-4 h-4 mr-2" />}
                 {copied ? dict.quote_details.copied : dict.quote_details.copy_wa}
-            </button>
+            </Button>
 
-            <button
+            <Button
                 onClick={openWhatsApp}
-                className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors shadow-lg shadow-green-500/20"
+                className="bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/20"
             >
-                <Share2 className="w-4 h-4" />
+                <Share2 className="w-4 h-4 mr-2" />
                 {dict.quote_details.send_wa}
-            </button>
+            </Button>
         </div>
     )
 }
