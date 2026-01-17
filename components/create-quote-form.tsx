@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, Plus, Trash2, User, Package, Save } from 'lucide-react'
+import { Search, Plus, Trash2, User, Package, Save, ChevronDown } from 'lucide-react'
 import { searchContacts, searchProducts, createQuote } from '@/app/lib/actions'
 import { useDebouncedCallback } from 'use-debounce'
 import Image from 'next/image'
@@ -18,6 +18,8 @@ type Product = {
     id: string
     name: string
     price_list: number
+    price_offer: number
+    price_min: number
     image_url?: string
 }
 
@@ -27,6 +29,14 @@ type QuoteItem = {
     quantity: number
     unit_price: number
     image_url?: string
+    // Helper to track which tier is selected (1=List, 2=Offer, 3=Min)
+    selected_tier: 1 | 2 | 3
+    // Store all prices to allow switching
+    prices: {
+        p1: number
+        p2: number
+        p3: number
+    }
 }
 
 export default function CreateQuoteForm() {
@@ -65,7 +75,7 @@ export default function CreateQuoteForm() {
             return
         }
         setLoading(true)
-        const results = await searchProducts(query)
+        const results = await searchProducts(query) as unknown as Product[]
         setProductResults(results || [])
         setLoading(false)
     }, 300)
@@ -85,8 +95,14 @@ export default function CreateQuoteForm() {
                 product_id: product.id,
                 product_name: product.name,
                 quantity: 1,
-                unit_price: product.price_list,
-                image_url: product.image_url
+                unit_price: product.price_list, // Default to Price 1
+                image_url: product.image_url,
+                selected_tier: 1,
+                prices: {
+                    p1: product.price_list,
+                    p2: product.price_offer,
+                    p3: product.price_min
+                }
             }]
         })
         setProductSearch('')
@@ -104,6 +120,19 @@ export default function CreateQuoteForm() {
         }))
     }
 
+    // Update Price Tier
+    const updatePriceTier = (productId: string, tier: 1 | 2 | 3) => {
+        setCart(current => current.map(item => {
+            if (item.product_id === productId) {
+                let newPrice = item.prices.p1
+                if (tier === 2) newPrice = item.prices.p2
+                if (tier === 3) newPrice = item.prices.p3
+                return { ...item, selected_tier: tier, unit_price: newPrice }
+            }
+            return item
+        }))
+    }
+
     // Remove Item
     const removeItem = (productId: string) => {
         setCart(current => current.filter(item => item.product_id !== productId))
@@ -116,7 +145,13 @@ export default function CreateQuoteForm() {
         setSubmitting(true)
         const result = await createQuote({
             contact_id: selectedContact.id,
-            items: cart
+            items: cart.map(item => ({
+                product_id: item.product_id,
+                product_name: item.product_name,
+                quantity: item.quantity,
+                unit_price: item.unit_price,
+                price_type: item.selected_tier
+            }))
         })
 
         if (result.success) {
@@ -127,7 +162,9 @@ export default function CreateQuoteForm() {
         }
     }
 
-    const totalAmount = cart.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0)
+    const subtotal = cart.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0)
+    const tax = subtotal * 0.16
+    const totalAmount = subtotal + tax
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -223,7 +260,13 @@ export default function CreateQuoteForm() {
                                         </div>
                                         <div className="flex-1">
                                             <p className="font-medium text-sm text-gray-900 dark:text-white line-clamp-1">{product.name}</p>
-                                            <p className="text-xs text-green-600 font-bold">${product.price_list}</p>
+                                            <div className="flex gap-2 text-xs">
+                                                <span className="text-green-600 font-bold">${product.price_list}</span>
+                                                <span className="text-gray-400">|</span>
+                                                <span className="text-gray-500">${product.price_offer}</span>
+                                                <span className="text-gray-400">|</span>
+                                                <span className="text-gray-500">${product.price_min}</span>
+                                            </div>
                                         </div>
                                         <Plus className="w-4 h-4 text-gray-400" />
                                     </button>
@@ -240,20 +283,31 @@ export default function CreateQuoteForm() {
                             </div>
                         ) : (
                             cart.map(item => (
-                                <div key={item.product_id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                                <div key={item.product_id} className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg gap-4">
                                     <div className="flex items-center gap-4 flex-1">
                                         <div className="w-12 h-12 bg-white rounded-md relative overflow-hidden shadow-sm flex-shrink-0">
                                             {item.image_url && (
                                                 <Image src={item.image_url} alt={item.product_name} fill className="object-cover" />
                                             )}
                                         </div>
-                                        <div className="min-w-0">
+                                        <div className="min-w-0 flex-1">
                                             <p className="font-medium text-sm text-gray-900 dark:text-white truncate pr-4">{item.product_name}</p>
-                                            <p className="text-xs text-gray-500">${item.unit_price} each</p>
+                                            {/* Price Selector */}
+                                            <div className="mt-1 flex items-center gap-2">
+                                                <select
+                                                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded text-xs py-1 px-2 focus:ring-2 focus:ring-blue-500"
+                                                    value={item.selected_tier}
+                                                    onChange={(e) => updatePriceTier(item.product_id, Number(e.target.value) as 1 | 2 | 3)}
+                                                >
+                                                    <option value={1}>{dict.products?.price_list ?? 'Precio 1'} (${item.prices.p1})</option>
+                                                    <option value={2}>{dict.products?.price_offer ?? 'Precio 2'} (${item.prices.p2})</option>
+                                                    <option value={3}>{dict.products?.price_min ?? 'Precio 3'} (${item.prices.p3})</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-4 justify-between md:justify-end">
                                         <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900">
                                             <button
                                                 className="px-2 py-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -294,11 +348,15 @@ export default function CreateQuoteForm() {
                     <div className="space-y-3 pb-6 border-b border-gray-100 dark:border-gray-800">
                         <div className="flex justify-between text-sm">
                             <span className="text-gray-500">Items ({cart.reduce((a, b) => a + b.quantity, 0)})</span>
-                            <span className="font-medium">${totalAmount.toFixed(2)}</span>
+                            <span className="font-medium">${subtotal.toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                            <span className="text-gray-500">Tax</span>
-                            <span className="font-medium">$0.00</span>
+                            <span className="text-gray-500">Subtotal</span>
+                            <span className="font-medium">${subtotal.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-500">IVA (16%)</span>
+                            <span className="font-medium">${tax.toFixed(2)}</span>
                         </div>
                     </div>
 

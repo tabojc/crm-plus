@@ -26,9 +26,9 @@ export class QuoteRepository {
             .from('quotes')
             .select(`
                 *,
-                contacts (full_name, organization),
+                contacts (full_name, organization, phone, address),
                 quote_items (
-                    id, product_name, quantity, unit_price, total
+                    id, product_name, quantity, unit_price, total, price_type
                 )
             `)
             .eq('id', id)
@@ -64,5 +64,17 @@ export class QuoteRepository {
             console.error('QuoteRepository.createItems error:', itemsError)
             throw new Error('Failed to create quote items')
         }
+    }
+
+    async count() {
+        const { count, error } = await this.supabase
+            .from('quotes')
+            .select('*', { count: 'exact', head: true })
+
+        if (error) {
+            console.error('QuoteRepository.count error:', error)
+            return 0
+        }
+        return count || 0
     }
 }

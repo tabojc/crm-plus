@@ -72,9 +72,12 @@ export default async function QuotesPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <button className="text-gray-500 hover:text-gray-700 dark:hover:text-white">
-                                                View
-                                            </button>
+                                            <Link
+                                                href={`/dashboard/quotes/${quote.id}`}
+                                                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                                            >
+                                                {dict.common.view_details || 'View'}
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))

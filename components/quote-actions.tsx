@@ -1,13 +1,22 @@
 'use client'
 
-import { Copy, Share2, Check } from 'lucide-react'
+import { Copy, Share2, Check, Download } from 'lucide-react'
 import { useState } from 'react'
 import { getDictionary } from '@/dictionaries'
+import { PDFDownloadLink } from '@react-pdf/renderer'
+import QuotePDF from './quote-pdf'
 
 type QuoteData = {
     id: string
+    number: number
+    created_at: string
     total: number
-    contacts: { full_name: string }
+    contacts: {
+        full_name: string
+        organization: string
+        phone?: string
+        address?: string
+    }
     quote_items: {
         product_name: string
         quantity: number
@@ -23,7 +32,7 @@ export default function QuoteActions({ quote }: { quote: QuoteData }) {
     const generateWhatsAppText = () => {
         const header = dict.quotes.wa_template_header.replace('{name}', quote.contacts.full_name) + '\n\n'
         const items = quote.quote_items.map(item =>
-            `• ${item.quantity}x ${item.product_name}: $${item.total.toFixed(2)}`
+            `• ${item.quantity}x ${item.product_name}: $${Number(item.total).toFixed(2)}`
         ).join('\n')
         const footer = `\n\n*${dict.common.total}: $${Number(quote.total).toFixed(2)}*`
 
@@ -44,6 +53,23 @@ export default function QuoteActions({ quote }: { quote: QuoteData }) {
 
     return (
         <div className="flex gap-4">
+            <PDFDownloadLink
+                document={<QuotePDF quote={quote} />}
+                fileName={`cotizacion-${quote.id.slice(0, 8)}.pdf`}
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+                {({ blob, url, loading, error }) => (
+                    loading ? (
+                        <>Loading...</>
+                    ) : (
+                        <>
+                            <Download className="w-4 h-4" />
+                            {dict.quote_details.download_pdf}
+                        </>
+                    )
+                )}
+            </PDFDownloadLink>
+
             <button
                 onClick={copyToClipboard}
                 className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"

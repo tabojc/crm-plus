@@ -3,7 +3,7 @@ import { type ReactNode } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { LayoutDashboard, Users, ShoppingBag, LogOut, Settings } from 'lucide-react'
+import { LayoutDashboard, Users, ShoppingBag, LogOut, Settings, FileText } from 'lucide-react'
 import { getDictionary } from '@/dictionaries'
 
 import MobileNav from '@/components/mobile-nav'
@@ -49,6 +49,10 @@ export default async function DashboardLayout({ children }: { children: ReactNod
                     <Link href="/dashboard/products" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
                         <ShoppingBag className="w-5 h-5" />
                         {dict.nav.products}
+                    </Link>
+                    <Link href="/dashboard/quotes" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                        <FileText className="w-5 h-5" />
+                        {dict.nav.quotes}
                     </Link>
                     <Link href="/dashboard/settings" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
                         <Settings className="w-5 h-5" />

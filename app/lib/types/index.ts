@@ -1,9 +1,10 @@
 
 export type QuoteItemInput = {
-    product_id?: string
+    product_id: string
     product_name: string
     quantity: number
     unit_price: number
+    price_type?: 1 | 2 | 3
 }
 
 export type CreateQuoteInput = {

@@ -16,6 +16,7 @@ export const es = {
         prev: "Anterior",
         environment_local: "Entorno Local (Dev)",
         items: "Ítems",
+        view_details: "Ver Detalle",
     },
     nav: {
         dashboard: "Panel Principal",
@@ -34,7 +35,9 @@ export const es = {
         system_status: "Estado del Sistema",
         online: "En Línea",
         version: "v1.0.0",
-        new_today: "+{count} hoy"
+        new_today: "+{count} hoy",
+        total_quotes: "Cotizaciones Totales",
+        recent_activity: "Actividad Reciente"
     },
     login: {
         title: "Acceso Backoffice",
@@ -70,9 +73,9 @@ export const es = {
     products: {
         title: "Catálogo",
         subtitle: "Precios e inventario en tiempo real.",
-        price_list: "Precio 1",
-        price_min: "Precio 3",
-        price_offer: "Precio 2",
+        price_list: "Precio Lista (1)",
+        price_offer: "Precio Oferta (2)",
+        price_min: "Precio Mínimo (3)",
         in_stock: "En Stock",
         out_stock: "Agotado",
     },
@@ -103,5 +106,6 @@ export const es = {
         copy_wa: "Copiar Texto WA",
         send_wa: "Enviar por WhatsApp",
         copied: "¡Copiado!",
+        download_pdf: "Descargar PDF",
     }
 }
