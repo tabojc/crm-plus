@@ -4,6 +4,7 @@ import ContactActions from '@/components/contact-row-actions'
 import Link from 'next/link'
 import { X, Plus, FilePlus, CheckCircle2, AlertCircle } from 'lucide-react'
 import { getDictionary } from '@/dictionaries'
+import Pagination from '@/components/pagination'
 
 export default async function ContactsPage({
     searchParams,
@@ -11,20 +12,25 @@ export default async function ContactsPage({
     searchParams: Promise<{
         query?: string
         tag?: string
+        page?: string
     }>
 }) {
     const params = await searchParams
     const query = params?.query || ''
     const tag = params?.tag || ''
-    const [contacts, totalCount] = await Promise.all([
-        searchContacts(query, tag),
+    const page = Number(params?.page) || 1
+
+    const [{ data: contacts, count: filteredCount }, totalCount] = await Promise.all([
+        searchContacts(query, tag, page),
         getContactsCount()
     ])
+    const totalPages = Math.ceil(filteredCount / 15)
+
     const dict = getDictionary()
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div className="p-6 max-w-7xl mx-auto">
+            <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
                     <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{dict.contacts.title}</h2>
                     <p className="text-gray-500 dark:text-gray-400">
@@ -139,8 +145,8 @@ export default async function ContactsPage({
                 </div>
             </div>
 
-            <div className="mt-4 text-center text-xs text-gray-400">
-                Showing top results. Refine your search to find specific contacts.
+            <div className="mt-4 flex justify-center">
+                <Pagination totalPages={totalPages} />
             </div>
         </div>
     )

@@ -5,10 +5,11 @@ import { revalidatePath } from 'next/cache'
 import { ContactRepository } from '../repositories/contact-repository'
 import { ContactInput } from '../types'
 
-export async function searchContacts(query: string, tag?: string) {
+export async function searchContacts(query: string, tag?: string, page: number = 1) {
     const supabase = await createClient()
     const repo = new ContactRepository(supabase)
-    return await repo.search(query, tag)
+    // 15 is the requested page size
+    return await repo.search(query, tag, page, 15)
 }
 
 export async function getContact(id: string) {

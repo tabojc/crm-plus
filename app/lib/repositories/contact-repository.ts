@@ -5,13 +5,12 @@ import { ContactInput } from '@/app/lib/types'
 export class ContactRepository {
     constructor(private supabase: SupabaseClient) { }
 
-    async search(query: string, tag?: string) {
+    async search(query: string, tag?: string, page: number = 1, pageSize: number = 20) {
         let dbQuery = this.supabase
             .from('contacts')
-            .select('id, full_name, organization, waid, tags, phone')
+            .select('id, full_name, organization, waid, tags, phone', { count: 'exact' })
             .order('created_at', { ascending: false })
             .order('full_name', { ascending: true })
-            .limit(20)
 
         if (query) {
             dbQuery = dbQuery.or(`full_name.ilike.%${query}%,organization.ilike.%${query}%`)
@@ -21,14 +20,17 @@ export class ContactRepository {
             dbQuery = dbQuery.contains('tags', [tag])
         }
 
-        const { data, error } = await dbQuery
+        const from = (page - 1) * pageSize
+        const to = from + pageSize - 1
+
+        const { data, error, count } = await dbQuery.range(from, to)
 
         if (error) {
             console.error('ContactRepository.search error:', error)
-            return []
+            return { data: [], count: 0 }
         }
 
-        return data
+        return { data: data || [], count: count || 0 }
     }
 
     async findById(id: string) {
