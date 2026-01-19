@@ -17,8 +17,8 @@ export default async function ProductsPage({
     const dict = getDictionary()
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div className="p-6 max-w-7xl mx-auto">
+            <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
                     <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{dict.products.title}</h2>
                     <p className="text-gray-500 dark:text-gray-400">{dict.products.subtitle} ({products.length} items)</p>
