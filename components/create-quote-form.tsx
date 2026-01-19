@@ -67,7 +67,7 @@ export default function CreateQuoteForm() {
         }
         setLoading(true)
         const results = await searchContacts(query)
-        setContactResults(results || [])
+        setContactResults(results.data || [])
         setLoading(false)
     }, 300)
 
